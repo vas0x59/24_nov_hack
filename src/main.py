@@ -39,6 +39,14 @@ def fix_a(a):
     else:
         return a
 
+def fix_a2(a):
+    if a < 0:
+        return a + 2*math.pi
+    elif a > 2*math.pi:
+        return a - 2*math.pi
+    else:
+        return a
+
 def proc_ranges(rng):
     crds = np.array([np.array([math.cos(math.radians(i) - math.pi)*j, math.sin(math.radians(i) - math.pi)*j]) for i, j in enumerate(rng) if abs(j) != float('inf')])
     return crds
@@ -121,13 +129,15 @@ def move_right():
     # st = odom_xyt[2]
     # t = fix_a(odom_xyt[2] - (math.pi/2)+0.05)
     # print("TURN START", t, odom_xyt[2])
-    target = offset_yaw(odom_xyt[2], math.pi/2)
+    st =  odom_xyt[2]
+    target = fix_a2((-odom_xyt[2]+math.pi) + math.pi/2)
     vel_right(-0.18)
     vel_right(-0.18)
-    while abs(offset_yaw(odom_xyt[2], target)) > 0.01:
-        print(offset_yaw(odom_xyt[2], target))
+    while not rospy.is_shutdown() and (st-math.pi/2)-(odom_xyt[2]) < -0.1:
+        # print(offset_yaw(fix_a2(target - (-odom_xyt[2]+math.pi)), math.pi))
+        print(st, odom_xyt[2],  (st-math.pi/2)-(odom_xyt[2]), fix_a((st-math.pi)-(odom_xyt[2])))
         # print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
-        rospy.sleep(0.001)
+        rospy.sleep(0.01)
     vel_right(0)
 
 def stop():
@@ -148,9 +158,10 @@ while not rospy.is_shutdown():
         stop()
         if turn_c < 5:
             input()
-            odom_0_xyt = odom_xyt
+            # odom_0_xyt = odom_xyt
             move_right()
             stop()
+            pid.zero()
             turn_c+=1
         else:
             break
