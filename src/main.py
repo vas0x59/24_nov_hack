@@ -75,13 +75,13 @@ def get_speed(fl_d, f_d):
     else:
         return SPEED_HIGH
 
-def follow(lidar_corordinates): # v, a, d
+def follow(lidar_corordinates, target_l = 0.3): # v, a, d
     global pid, left_points_pub
     left_points = get_left_points(lidar_corordinates)
     forward_points = get_forward_points(lidar_corordinates)
     left_points_pub.publish(PoseArray(poses=[Pose(position=Point(x=i[0], y=i[1], z=0)) for i in list(left_points)+list(forward_points)], header=Header(frame_id="base_scan")))
     d = get_forward_wall_dist(forward_points)
-    fl_d = get_follow_data(left_points)
+    fl_d = get_follow_data(left_points, target_l)
     if (fl_d is None):
         return (0, 0, d)
     l_v = get_speed(fl_d, d)
