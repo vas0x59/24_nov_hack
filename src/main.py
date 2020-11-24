@@ -4,7 +4,8 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 import tf
-
+import numpy as np
+import math 
 rospy.init_node("v_and_v_node")
 
 pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
@@ -27,9 +28,9 @@ def scan_cb(mes):
 
 
 def odom_cb(mes):
-    global odom_xyt, odom_updated
+    global odom_xyt, odom_0_xyt, odom_updated
     odom_yaw = tf.transformations.euler_from_quaternion([
-        data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w])[2]
+        mes.pose.pose.orientation.x, mes.pose.pose.orientation.y, mes.pose.pose.orientation.z, mes.pose.pose.orientation.w])[2]
     if odom_0_xyt is None:
         odom_0_xyt = (mes.pose.pose.position.x, mes.pose.pose.position.y, odom_yaw)
     odom_xyt = (mes.pose.pose.position.x-odom_0_xyt[0], mes.pose.pose.position.y-odom_0_xyt[1], odom_yaw-odom_0_xyt[2])
@@ -39,7 +40,7 @@ def odom_cb(mes):
 rospy.Subscriber("/scan", LaserScan, scan_cb)
 rospy.Subscriber("/odom", Odometry, odom_cb)
 
-while True:
+while not rospy.is_shutdown():
     print(odom_xyt)
     rospy.sleep(0.1)
 
