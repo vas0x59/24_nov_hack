@@ -9,7 +9,9 @@ rospy.init_node("v_and_v_node")
 
 pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
 
-odom_xyt = (0, 0, 0)
+
+odom_xyt = (0, 0, 0) 
+odom_0_xyt = None
 
 lidar_corordinates = []
 
@@ -25,15 +27,20 @@ def scan_cb(mes):
 
 
 def odom_cb(mes):
-    global odom_xyt
+    global odom_xyt, odom_updated
     odom_yaw = tf.transformations.euler_from_quaternion([
         data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w])[2]
-    odom_xyt = (mes.pose.pose.position.x, mes.pose.pose.position.y, odom_yaw)
+    if odom_0_xyt is None:
+        odom_0_xyt = (mes.pose.pose.position.x, mes.pose.pose.position.y, odom_yaw)
+    odom_xyt = (mes.pose.pose.position.x-odom_0_xyt[0], mes.pose.pose.position.y-odom_0_xyt[1], odom_yaw-odom_0_xyt[2])
 
 
 
 rospy.Subscriber("/scan", LaserScan, scan_cb)
 rospy.Subscriber("/odom", Odometry, odom_cb)
 
+while True:
+    print(odom_xyt)
+    rospy.sleep(0.1)
 
 
