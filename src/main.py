@@ -78,7 +78,7 @@ def get_follow_data(points, target_l = 0.3):
         x2 = 0.1; y2 = poly1d_fn(x2)
         
         wall_angle = math.atan2(y2-y1, x2-x1)
-        print("wall_angle", wall_angle, "mean_dist", mean_dist)
+        # print("wall_angle", wall_angle, "mean_dist", mean_dist)
         return (mean_dist-target_l)/0.3, wall_angle/(math.pi/4)
     else:
         return None
@@ -95,7 +95,7 @@ def follow(lidar_corordinates, target_l = 0.3): # v, a, d
     global pid, left_points_pub
     left_points = get_left_points(lidar_corordinates)
     forward_points = get_forward_points(lidar_corordinates)
-    left_points_pub.publish(PoseArray(poses=[Pose(position=Point(x=i[0], y=i[1], z=0)) for i in list(left_points)+list(forward_points)], header=Header(frame_id="base_scan")))
+    # left_points_pub.publish(PoseArray(poses=[Pose(position=Point(x=i[0], y=i[1], z=0)) for i in list(left_points)+list(forward_points)], header=Header(frame_id="base_scan")))
     d = get_forward_wall_dist(forward_points)
     fl_d = get_follow_data(left_points, target_l)
     if (fl_d is None):
@@ -105,7 +105,7 @@ def follow(lidar_corordinates, target_l = 0.3): # v, a, d
     a_v = 0
     if not (e == float('nan')):
         a_v = pid.calc(e)
-    print("FL_D", fl_d, "FORWARD_D", d, "ERR", e, "OUT_A", a_v, "OUT_L", l_v)
+    # print("FL_D", fl_d, "FORWARD_D", d, "ERR", e, "OUT_A", a_v, "OUT_L", l_v)
     return (l_v, a_v, d) 
 
 def odom_cb(mes):
@@ -135,7 +135,7 @@ def move_right():
     vel_right(-0.18)
     while not rospy.is_shutdown() and (st-math.pi/2)-(odom_xyt[2]) < -0.1:
         # print(offset_yaw(fix_a2(target - (-odom_xyt[2]+math.pi)), math.pi))
-        print(st, odom_xyt[2],  (st-math.pi/2)-(odom_xyt[2]), fix_a((st-math.pi)-(odom_xyt[2])))
+        # print(st, odom_xyt[2],  (st-math.pi/2)-(odom_xyt[2]), fix_a((st-math.pi)-(odom_xyt[2])))
         # print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
         rospy.sleep(0.01)
     vel_right(0)
@@ -154,10 +154,10 @@ while not rospy.is_shutdown():
     if turn_c == 0:
         target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if d < 0.305:
+    if d < 0.308:
         stop()
         if turn_c < 5:
-            input()
+            raw_input()
             # odom_0_xyt = odom_xyt
             move_right()
             stop()
