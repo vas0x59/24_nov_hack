@@ -53,7 +53,7 @@ def get_forward_wall_dist(points):
     else:
         return float('nan')
 
-def get_follow_data(points):
+def get_follow_data(points, target_l = 0.3):
     if len(points) > 0:
         mean_dist = abs(points.mean(axis=0)[1])
         coef = np.polyfit(points[:, 0],points[:, 1],1)
@@ -63,7 +63,7 @@ def get_follow_data(points):
         
         wall_angle = math.atan2(y2-y1, x2-x1)
         print("wall_angle", wall_angle, "mean_dist", mean_dist)
-        return (mean_dist-0.3)/0.3, wall_angle/(math.pi/4)
+        return (mean_dist-target_l)/0.3, wall_angle/(math.pi/4)
     else:
         return None
 def get_error(fl_d):
@@ -125,11 +125,14 @@ def stop():
 turn_c = 0
 
 while not rospy.is_shutdown():
-    v, a, d = follow(lidar_corordinates)
+    target_l = 0.3
+    if turn_c == 0:
+        target_l = 0.5
+    v, a, d = follow(lidar_corordinates, target_l)
     if d < 0.305:
         stop()
         if turn_c < 5:
-            input()
+            raw_input()
             odom_0_xyt = odom_xyt
             move_right()
             stop()
