@@ -83,7 +83,7 @@ def get_follow_data(points, target_l = 0.3):
     else:
         return None
 def get_error(fl_d):
-    return fl_d[0]*0.55 + fl_d[1]*0.45
+    return fl_d[0]*0.58 + fl_d[1]*0.42
 
 def get_speed(fl_d, f_d):
     if abs(fl_d[0]) > 1 or f_d < 0.45:
