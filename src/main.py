@@ -133,7 +133,7 @@ def move_right():
     target = fix_a2((-odom_xyt[2]+math.pi) + math.pi/2)
     vel_right(-0.18)
     vel_right(-0.18)
-    while not rospy.is_shutdown() and (st-math.pi/2)-(odom_xyt[2]) < -0.1:
+    while not rospy.is_shutdown() and fix_a((st-math.pi/2)-(odom_xyt[2])) < -0.1:
         # print(offset_yaw(fix_a2(target - (-odom_xyt[2]+math.pi)), math.pi))
         # print(st, odom_xyt[2],  (st-math.pi/2)-(odom_xyt[2]), fix_a((st-math.pi)-(odom_xyt[2])))
         # print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
