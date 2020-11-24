@@ -110,7 +110,7 @@ def vel_right(vel):
     pub.publish(pub_vel)
 def move_right():
     global odom_xyt,odom_0_xyt
-    t = fix_a((t + (math.pi/2)+0.05))
+    t = fix_a(odom_xyt[0] + (math.pi/2)+0.05)
     while abs(t - odom_xyt[0]) < 0.1:
         vel_right(-0.2)
         print("TURN ", t - odom_xyt[0])
