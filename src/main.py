@@ -18,7 +18,7 @@ odom_0_xyt = None
 
 lidar_corordinates = []
 
-pid = PID(kP=2, kD=0.1)
+pid = PID(kP=2, kD=0.3)
 
 SPEED_LOW = 0.08
 SPEED_HIGH = 0.15
