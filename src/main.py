@@ -171,7 +171,7 @@ while not rospy.is_shutdown():
         print("DDDDD")
         break_s()
         break
-    elif turn_c != 5 d < 0.30+0.008:
+    elif turn_c != 5 and d < 0.30+0.008:
         break_s()
         if turn_c < 5:
             print("wait")
