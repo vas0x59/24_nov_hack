@@ -22,6 +22,14 @@ pid = PID(kP=1.8, kD=0.1)
 
 SPEED_LOW = 0.1
 SPEED_HIGH = 0.2
+def offset_yaw(yaw, zero_yaw):
+    itog = yaw
+    itog = yaw - zero_yaw
+    if (itog > 1.0 * math.pi):
+            itog -= 2.0 * math.pi
+    if (itog < -1.0 * math.pi):
+        itog+= 2.0 * math.pi
+    return itog
 
 def fix_a(a):
     if a < -math.pi:
@@ -110,12 +118,13 @@ def vel_right(vel):
     pub.publish(pub_vel)
 def move_right():
     global odom_xyt,odom_0_xyt
-    st = odom_xyt[2]
-    t = fix_a(odom_xyt[2] - (math.pi/2)+0.05)
+    # st = odom_xyt[2]
+    # t = fix_a(odom_xyt[2] - (math.pi/2)+0.05)
     print("TURN START", t, odom_xyt[2])
-    while abs(fix_a(t - odom_xyt[2])) > 0.05:
+    while abs(offset_yaw(odom_xyt[2], -math.pi/2)) > 0.05:
         vel_right(-0.2)
-        print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
+        print(abs(offset_yaw(odom_xyt[2], -math.pi/2)))
+        # print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
         rospy.sleep(0.001)
     vel_right(0)
 
