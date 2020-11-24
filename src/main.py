@@ -20,7 +20,7 @@ lidar_corordinates = []
 
 pid = PID(kP=2, kD=0.3)
 
-SPEED_LOW = 0.08
+SPEED_LOW = 0.07
 SPEED_HIGH = 0.15
 def offset_yaw(yaw, zero_yaw):
     itog = yaw
@@ -86,7 +86,7 @@ def get_error(fl_d):
     return fl_d[0]*0.55 + fl_d[1]*0.45
 
 def get_speed(fl_d, f_d):
-    if abs(fl_d[0]) > 1 or f_d < 0.5:
+    if abs(fl_d[0]) > 1 or f_d < 0.45:
         return SPEED_LOW
     else:
         return SPEED_HIGH
@@ -147,6 +147,16 @@ def stop():
     out.angular.z = 0
     pub.publish(out)
 
+def break_s():
+    global pub
+    stop()
+    out = Twist()
+    out.linear.x = -0.1
+    out.angular.z = 0
+    pub.publish(out)
+    time.sleep(0.1)
+    stop()
+
 turn_c = 0
 
 while not rospy.is_shutdown():
@@ -154,12 +164,15 @@ while not rospy.is_shutdown():
     if turn_c == 0:
         target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 5 and d < (0.4-0.13)+0.01:
-        stop()
+    if turn_c == 5 and d < (0.4-0.13)+0.005:
+        break_s()
         break
-    elif d < 0.31:
-        stop()
+    elif d < 0.30+0.005:
+        break_s()
         if turn_c < 5:
+            print("wait")
+            time.sleep(1)
+            print("wait_for_enter")
             raw_input()
             # odom_0_xyt = odom_xyt
             move_right()
