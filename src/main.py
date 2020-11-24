@@ -120,7 +120,7 @@ def move_right():
     global odom_xyt,odom_0_xyt
     # st = odom_xyt[2]
     # t = fix_a(odom_xyt[2] - (math.pi/2)+0.05)
-    print("TURN START", t, odom_xyt[2])
+    # print("TURN START", t, odom_xyt[2])
     while abs(offset_yaw(odom_xyt[2], -math.pi/2)) > 0.05:
         vel_right(-0.2)
         print(abs(offset_yaw(odom_xyt[2], -math.pi/2)))
