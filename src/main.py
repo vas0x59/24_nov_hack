@@ -19,12 +19,12 @@ def proc_ranges(rng):
     return crds
 
 
-def scan_cb(mes: LaserScan):
+def scan_cb(mes):
     global lidar_corordinates
     lidar_corordinates = proc_ranges(mes.ranges)
 
 
-def odom_cb(mes: Odometry):
+def odom_cb(mes):
     global odom_xyt
     odom_yaw = tf.transformations.euler_from_quaternion([
         data.pose.pose.orientation.x, data.pose.pose.orientation.y, data.pose.pose.orientation.z, data.pose.pose.orientation.w])[2]
