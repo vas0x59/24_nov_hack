@@ -167,11 +167,11 @@ while not rospy.is_shutdown():
     if turn_c == 0:
         target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 5 and d < (0.4-0.13)-0.011:
+    if turn_c == 5 and d < (0.4-0.13:
         print("DDDDD")
         break_s()
         break
-    elif d < 0.30+0.011:
+    elif turn_c != 5 d < 0.30+0.008:
         break_s()
         if turn_c < 5:
             print("wait")
