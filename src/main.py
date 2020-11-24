@@ -154,7 +154,7 @@ def break_s():
     global pub
     stop()
     out = Twist()
-    out.linear.x = -0.15
+    out.linear.x = -0.12
     out.angular.z = 0
     pub.publish(out)
     time.sleep(0.11)
@@ -173,7 +173,12 @@ while not rospy.is_shutdown():
         else:
             target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 5 and d < (0.4-0.13+0.007):
+    if turn_c == 1 and d < (0.4+0.07+0.007):
+        print("DDDDD")
+        break_s()
+        raw_input()
+        # break
+    elif turn_c == 5 and d < (0.4-0.13+0.007):
         print("DDDDD")
         break_s()
         break
