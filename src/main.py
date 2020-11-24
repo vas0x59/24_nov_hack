@@ -86,10 +86,10 @@ def get_follow_data(points, target_l = 0.3):
     else:
         return None
 def get_error(fl_d):
-    return fl_d[0]*0.6 + fl_d[1]*0.40
+    return fl_d[0]*0.61 + fl_d[1]*0.39
 
 def get_speed(fl_d, f_d):
-    if abs(fl_d[0]) > 1 or f_d < 0.45:
+    if abs(fl_d[0]) > 1 or f_d < 0.57:
         return SPEED_LOW
     else:
         return SPEED_HIGH
@@ -154,7 +154,7 @@ def break_s():
     global pub
     stop()
     out = Twist()
-    out.linear.x = -0.1
+    out.linear.x = -0.15
     out.angular.z = 0
     pub.publish(out)
     time.sleep(0.1)
@@ -167,10 +167,11 @@ while not rospy.is_shutdown():
     if turn_c == 0:
         target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 5 and d < (0.4-0.13)-0.01:
+    if turn_c == 5 and d < (0.4-0.13)-0.011:
+        print("DDDDD")
         break_s()
         break
-    elif d < 0.30+0.001:
+    elif d < 0.30+0.011:
         break_s()
         if turn_c < 5:
             print("wait")
