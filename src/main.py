@@ -19,7 +19,8 @@ odom_0_xyt = None
 
 lidar_corordinates = []
 
-pid = PID(kP=2, kD=0.3)
+# pid = PID(kP=2, kD=0.3)
+pid = PID(kP=2, kD=0.7)
 
 SPEED_LOW = 0.07
 SPEED_HIGH = 0.15
@@ -155,7 +156,7 @@ def break_s():
     out.linear.x = -0.1
     out.angular.z = 0
     pub.publish(out)
-    time.sleep(0.1)
+    time.sleep(0.08)
     stop()
 
 turn_c = 0
@@ -165,10 +166,10 @@ while not rospy.is_shutdown():
     if turn_c == 0:
         target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 5 and d < (0.4-0.13)+0.005:
+    if turn_c == 5 and d < (0.4-0.13):
         break_s()
         break
-    elif d < 0.30+0.005:
+    elif d < 0.30+0.001:
         break_s()
         if turn_c < 5:
             print("wait")
