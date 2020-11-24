@@ -162,6 +162,7 @@ def break_s():
 
 turn_c = 0
 ffff = True
+ffff3 = True
 while not rospy.is_shutdown():
     target_l = 0.3-0.0001
     if turn_c == 0:
@@ -173,10 +174,11 @@ while not rospy.is_shutdown():
         else:
             target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 1 and d < (0.4+0.07+0.007):
-        print("DDDDD")
+    if turn_c == 1 and d < (0.4+0.07+0.007) and ffff3:
+        print("DDDDD wait")
         break_s()
         raw_input()
+        ffff3 = False
         # break
     elif turn_c == 5 and d < (0.4-0.13+0.007):
         print("DDDDD")
