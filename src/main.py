@@ -123,7 +123,7 @@ def move_right():
     # print("TURN START", t, odom_xyt[2])
     vel_right(-0.18)
     vel_right(-0.18)
-    while offset_yaw(odom_xyt[2], math.pi/2) > 0.0001:
+    while abs(offset_yaw(odom_xyt[2], math.pi/2)) > 0.001:
         print(offset_yaw(odom_xyt[2], math.pi/2))
         # print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
         rospy.sleep(0.001)
