@@ -20,7 +20,8 @@ odom_0_xyt = None
 lidar_corordinates = []
 
 # pid = PID(kP=2, kD=0.3)
-pid = PID(kP=1.8, kD=0.1)
+# pid = PID(kP=1.8, kD=0.1)
+pid = PID(kP=1.87, kD=0.1)
 
 SPEED_LOW = 0.07
 SPEED_HIGH = 0.15
@@ -85,7 +86,7 @@ def get_follow_data(points, target_l = 0.3):
     else:
         return None
 def get_error(fl_d):
-    return fl_d[0]*0.58 + fl_d[1]*0.42
+    return fl_d[0]*0.6 + fl_d[1]*0.40
 
 def get_speed(fl_d, f_d):
     if abs(fl_d[0]) > 1 or f_d < 0.45:
@@ -156,7 +157,7 @@ def break_s():
     out.linear.x = -0.1
     out.angular.z = 0
     pub.publish(out)
-    time.sleep(0.08)
+    time.sleep(0.1)
     stop()
 
 turn_c = 0
@@ -166,7 +167,7 @@ while not rospy.is_shutdown():
     if turn_c == 0:
         target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 5 and d < (0.4-0.13):
+    if turn_c == 5 and d < (0.4-0.13)-0.01:
         break_s()
         break
     elif d < 0.30+0.001:
