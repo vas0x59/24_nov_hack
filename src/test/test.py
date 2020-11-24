@@ -12,13 +12,21 @@ global odom_xyt
 odom_xyt = (0, 0, 0)
 odom_0_xyt = None
 
-def odom_cb(msg):
+def fix_a(a):
+    if a < -math.pi:
+        return a + 2*math.pi
+    elif a > math.pi:
+        return a - 2*math.pi
+    else:
+        return a
+
+def odom_cb(mes):
     global odom_xyt, odom_0_xyt
     odom_yaw = tf.transformations.euler_from_quaternion([
-        msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w])[2]
+        mes.pose.pose.orientation.x, mes.pose.pose.orientation.y, mes.pose.pose.orientation.z, mes.pose.pose.orientation.w])[2]
     if odom_0_xyt is None:
-        odom_0_xyt = (msg.pose.pose.position.x, msg.pose.pose.position.y, odom_yaw)
-    odom_xyt = (msg.pose.pose.position.x-odom_0_xyt[0], msg.pose.pose.position.y-odom_0_xyt[1], odom_yaw-odom_0_xyt[2])
+        odom_0_xyt = (mes.pose.pose.position.x, mes.pose.pose.position.y, odom_yaw)
+    odom_xyt = (mes.pose.pose.position.x-odom_0_xyt[0], mes.pose.pose.position.y-odom_0_xyt[1], fix_a(odom_yaw-odom_0_xyt[2]))
 
 rospy.Subscriber('/odom',Odometry, odom_cb)
 def main():
