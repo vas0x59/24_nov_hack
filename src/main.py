@@ -119,10 +119,12 @@ while not rospy.is_shutdown():
     if d < 0.305:
         stop()
         if turn_c < 5:
+            input()
             # INSERT TURN
             turn_c+=1
         else:
             break
+        continue
         # break
 
     out = Twist()
