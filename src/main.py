@@ -113,7 +113,7 @@ def move_right():
     st = odom_xyt[2]
     t = fix_a(odom_xyt[2] - (math.pi/2)+0.05)
     print("TURN START", t, odom_xyt[2])
-    while abs(fix_a(st - odom_xyt[2])) < math.pi/2:
+    while abs(fix_a(t - odom_xyt[2])) > 0.05:
         vel_right(-0.2)
         print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
         rospy.sleep(0.001)
