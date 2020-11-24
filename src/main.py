@@ -104,6 +104,16 @@ def odom_cb(mes):
 
 rospy.Subscriber("/scan", LaserScan, scan_cb)
 rospy.Subscriber("/odom", Odometry, odom_cb)
+def vel_right(vel):
+    pub_vel = Twist()
+    pub_vel.angular.z = vel
+    pub.publish(pub_vel)
+def move_right():
+    global odom_xyt,odom_0_xyt
+    if odom_xyt[2] > -1*(math.pi/2)+0.13:
+        vel_right(-0.2)
+    else:
+        vel_right(0)
 
 def stop():
     global pub
@@ -120,7 +130,7 @@ while not rospy.is_shutdown():
         stop()
         if turn_c < 5:
             input()
-            # INSERT TURN
+            move_right()
             turn_c+=1
         else:
             break
