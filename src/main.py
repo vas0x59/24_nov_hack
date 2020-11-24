@@ -110,10 +110,10 @@ def vel_right(vel):
     pub.publish(pub_vel)
 def move_right():
     global odom_xyt,odom_0_xyt
-    if odom_xyt[2] > -1*(math.pi/2)+0.13:
+    t = odom_xyt[2]
+    while fix_a((t + (math.pi/2)+0.05) - odom_xyt[0]) <= 0:
         vel_right(-0.2)
-    else:
-        vel_right(0)
+    vel_right(0)
 
 def stop():
     global pub
@@ -130,7 +130,9 @@ while not rospy.is_shutdown():
         stop()
         if turn_c < 5:
             input()
+            odom_0_xyt = odom_xyt
             move_right()
+            stop()
             turn_c+=1
         else:
             break
@@ -145,9 +147,6 @@ while not rospy.is_shutdown():
     
     # left_points_pub.publish(PoseArray(poses=[Pose(position=Point(x=i[0], y=i[1], z=0)) for i in list(left_points)+list(forward_points)], header=Header(frame_id="base_scan")))
     rospy.sleep(0.001)
-out = Twist()
-out.linear.x = 0
-out.angular.z = 0
-pub.publish(out)
+stop()
 # pub.publish(out)
 
