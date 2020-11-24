@@ -20,8 +20,8 @@ lidar_corordinates = []
 
 pid = PID(kP=1.8, kD=0.1)
 
-SPEED_LOW = 0.1
-SPEED_HIGH = 0.2
+SPEED_LOW = 0.08
+SPEED_HIGH = 0.15
 def offset_yaw(yaw, zero_yaw):
     itog = yaw
     itog = yaw - zero_yaw
@@ -121,11 +121,11 @@ def move_right():
     # st = odom_xyt[2]
     # t = fix_a(odom_xyt[2] - (math.pi/2)+0.05)
     # print("TURN START", t, odom_xyt[2])
-    while abs(offset_yaw(odom_xyt[2], math.pi/2)) > 0.05:
-        vel_right(-0.2)
-        print(abs(offset_yaw(odom_xyt[2], -math.pi/2)))
+    while abs(offset_yaw(odom_xyt[2], math.pi/2)) > 0.005:
+        vel_right(-0.18)
+        print(offset_yaw(odom_xyt[2], math.pi/2))
         # print("TURN ",t,  odom_xyt[2],  abs(fix_a(t - odom_xyt[2])), abs(fix_a(st - odom_xyt[2])))
-        rospy.sleep(0.001)
+        rospy.sleep(0.0001)
     vel_right(0)
 
 def stop():
