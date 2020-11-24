@@ -6,6 +6,7 @@ from nav_msgs.msg import Odometry
 import tf
 import numpy as np
 import math 
+import time
 from PID import PID
 rospy.init_node("test")
 
@@ -78,8 +79,8 @@ def get_follow_data(points, target_l = 0.3):
         x2 = 0.1; y2 = poly1d_fn(x2)
         
         wall_angle = math.atan2(y2-y1, x2-x1)
-        print("wall_angle", wall_angle, "mean_dist", mean_dist)
-        return (mean_dist-target_l)/0.3, wall_angle/(math.pi/4)
+        print("left_angle", wall_angle, "left_dist", mean_dist)
+        # return (mean_dist-target_l)/0.3, wall_angle/(math.pi/4)
     else:
         return None
 def get_error(fl_d):
@@ -152,7 +153,7 @@ turn_c = 0
 while not rospy.is_shutdown():
     left_points = get_left_points(lidar_corordinates)
     forward_points = get_forward_points(lidar_corordinates)
-    print(get_follow_data(left_points))
+    get_follow_data(left_points)
     print("FORWARD", get_forward_wall_dist(forward_points))
     rospy.sleep(0.01)
 
