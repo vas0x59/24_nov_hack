@@ -31,10 +31,11 @@ def odom_cb(mes):
 rospy.Subscriber('/odom',Odometry, odom_cb)
 def main():
     global odom_xyt,odom_0_xyt
-    if odom_xyt > -1*(math.pi/2):
-        move_right(-0.3)
+    if odom_xyt[2] > -1*(math.pi/2)+0.13:
+        move_right(-0.2)
     else:
         move_right(0)
+        exit()
     print(odom_xyt)
 def move_right(vel):
     pub_vel = Twist()
@@ -43,4 +44,4 @@ def move_right(vel):
 
 while not rospy.is_shutdown():
     main()
-    rospy.sleep(0.3)
+    rospy.sleep(0.1)
