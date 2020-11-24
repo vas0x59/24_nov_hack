@@ -6,6 +6,7 @@ from nav_msgs.msg import Odometry
 import tf
 import numpy as np
 import math 
+from PID import PID
 rospy.init_node("v_and_v_node")
 
 pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
@@ -16,6 +17,11 @@ odom_xyt = (0, 0, 0)
 odom_0_xyt = None
 
 lidar_corordinates = []
+
+pid = PID(kP=1.8, kD=0.1)
+
+SPEED_LOW = 0.1
+SPEED_HIGH = 0.2
 
 def fix_a(a):
     if a < -math.pi:
@@ -39,7 +45,7 @@ def get_left_points(lidar_corordinates):
 
 def get_forward_points(lidar_corordinates):
     return np.array([p for p in lidar_corordinates if p[0] < 0 and -0.05 <= p[1] <= 0.05])
-
+    
 
 def get_forward_wall_dist(points):
     if len(points) > 0:
@@ -48,8 +54,43 @@ def get_forward_wall_dist(points):
         return float('nan')
 
 def get_follow_data(points):
-    mean_dist = abs(points.mean(axis=0)[1])
-    wall_angle = 
+    if len(points) > 0:
+        mean_dist = abs(points.mean(axis=0)[1])
+        coef = np.polyfit(points[:, 0],points[:, 1],1)
+        poly1d_fn = np.poly1d(coef) 
+        x1 = -0.1; y1 = poly1d_fn(x1)
+        x2 = 0.1; y2 = poly1d_fn(x2)
+        
+        wall_angle = math.atan2(y2-y1, x2-x1)
+        print("wall_angle", wall_angle, "mean_dist", mean_dist)
+        return (mean_dist-0.3)/0.3, wall_angle/(math.pi/4)
+    else:
+        return None
+def get_error(fl_d):
+    return fl_d[0]*0.6 + fl_d[1]*0.4
+
+def get_speed(fl_d, f_d):
+    if abs(fl_d[0]) > 1 or f_d < 0.5:
+        return SPEED_LOW
+    else:
+        return SPEED_HIGH
+
+def follow(lidar_corordinates): # v, a, d
+    global pid, left_points_pub
+    left_points = get_left_points(lidar_corordinates)
+    forward_points = get_forward_points(lidar_corordinates)
+    left_points_pub.publish(PoseArray(poses=[Pose(position=Point(x=i[0], y=i[1], z=0)) for i in list(left_points)+list(forward_points)], header=Header(frame_id="base_scan")))
+    d = get_forward_wall_dist(forward_points)
+    fl_d = get_follow_data(left_points)
+    if (fl_d is None):
+        return (0, 0, d)
+    l_v = get_speed(fl_d, d)
+    e = get_error(fl_d)
+    a_v = 0
+    if not (e == float('nan')):
+        a_v = pid.calc(e)
+    print("FL_D", fl_d, "FORWARD_D", d, "ERR", e, "OUT_A", a_v, "OUT_L", l_v)
+    return (l_v, a_v, d) 
 
 def odom_cb(mes):
     global odom_xyt, odom_0_xyt, odom_updated
@@ -64,12 +105,37 @@ def odom_cb(mes):
 rospy.Subscriber("/scan", LaserScan, scan_cb)
 rospy.Subscriber("/odom", Odometry, odom_cb)
 
-while not rospy.is_shutdown():
-    # print(odom_xyt)
-    forward_points = get_forward_points(lidar_corordinates)
-    left_points = get_left_points(lidar_corordinates)
-    print(get_forward_wall_dist(forward_points))
-    left_points_pub.publish(PoseArray(poses=[Pose(position=Point(x=i[0], y=i[1], z=0)) for i in list(left_points)+list(forward_points)], header=Header(frame_id="base_scan")))
-    rospy.sleep(0.1)
+def stop():
+    global pub
+    out = Twist()
+    out.linear.x = 0
+    out.angular.z = 0
+    pub.publish(out)
 
+turn_c = 0
+
+while not rospy.is_shutdown():
+    v, a, d = follow(lidar_corordinates)
+    if d < 0.305:
+        stop()
+        if turn_c < 5:
+            # INSERT TURN
+            turn_c+=1
+        else:
+            break
+        # break
+
+    out = Twist()
+    out.linear.x = v
+    out.angular.z = a
+    pub.publish(out)
+    
+    
+    # left_points_pub.publish(PoseArray(poses=[Pose(position=Point(x=i[0], y=i[1], z=0)) for i in list(left_points)+list(forward_points)], header=Header(frame_id="base_scan")))
+    rospy.sleep(0.001)
+out = Twist()
+out.linear.x = 0
+out.angular.z = 0
+pub.publish(out)
+# pub.publish(out)
 
