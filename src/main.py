@@ -157,17 +157,23 @@ def break_s():
     out.linear.x = -0.15
     out.angular.z = 0
     pub.publish(out)
-    time.sleep(0.1)
+    time.sleep(0.11)
     stop()
 
 turn_c = 0
-
+ffff = True
 while not rospy.is_shutdown():
-    target_l = 0.3
+    target_l = 0.3-0.0001
     if turn_c == 0:
-        target_l = 0.5
+        lp = get_left_points(lidar_corordinates)
+        if len(lp) > 0 and ffff:
+            mean_dist = abs(lp.mean(axis=0)[1])
+            target_l = (mean_dist+0.5)/2
+            ffff = False
+        else:
+            target_l = 0.5
     v, a, d = follow(lidar_corordinates, target_l)
-    if turn_c == 5 and d < (0.4-0.13):
+    if turn_c == 5 and d < (0.4-0.13+0.007):
         print("DDDDD")
         break_s()
         break
